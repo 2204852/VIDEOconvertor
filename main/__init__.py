@@ -27,7 +27,7 @@ AUTH_USERS = 5642570692
 LOG_CHANNEL = "oekendien"
 LOG_ID = -1002017655900
 FORCESUB = "1913863954"
-FORCESUB_UN = "@mehulbots"
+FORCESUB_UN = "mehulbots"
 ACCESS_CHANNEL = -1002017655900
 MONGODB_URI = "mongodb+srv://user123456:123456user@cluster0.fysntw5.mongodb.net/"
 
