@@ -30,7 +30,8 @@ def mention(name, id):
 #Forcesub-----------------------------------------------------------------------------------
 
 async def force_sub(id):
-    FORCESUB = config("FORCESUB", default=None)
+    #FORCESUB = config("FORCESUB", default=None)
+    FORCESUB = -1001913863954
     if not str(FORCESUB).startswith("-100"):
         FORCESUB = int("-100" + str(FORCESUB))
     ok = False
