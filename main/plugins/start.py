@@ -45,8 +45,8 @@ async def info(event):
 async def notice(event):
     await event.answer(f'{spam_notice}', alert=True)
     
-@Drone.on(events.callbackquery.CallbackQuery(data="channels"))
-async def channels(event):
+@Drone.on(events.callbackquery.CallbackQuery(data="source"))
+async def source(event):
     await event.edit(source_text,
                     buttons=[[
                          Button.url("Our Main channel ", url="https://telegram.dog/botlisthub"),
