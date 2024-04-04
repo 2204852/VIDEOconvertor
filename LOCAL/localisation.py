@@ -27,7 +27,7 @@ help_text = """**v1.4**
 
 •`Trim` - cut your videos"""
 
-source_text = "**Deploy your own bot**"
+source_text = "**Our channels to join**"
 
 DEV = "https://t.me/Patil_Mehul"
 
