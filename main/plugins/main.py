@@ -32,7 +32,7 @@ from main.plugins.ssgen import screenshot
 from LOCAL.localisation import source_text, SUPPORT_LINK
 
 #Don't be a MF by stealing someone's hardwork.
-forcesubtext = f"We also need something to run this bot so don't be smart.To use this bot you've to join @{FORCESUB_UN}.\n\nAlso join @mehulsupportgroup otherwise bot will not work."
+forcesubtext = f"We also need something to run this bot so don't be smart.To use this bot you've to join @{FORCESUB_UN}.\n\nAlso join @mehulsupport otherwise bot will not work."
 
 @Drone.on(events.NewMessage(incoming=True,func=lambda e: e.is_private))
 async def compin(event):
