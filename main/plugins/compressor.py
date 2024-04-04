@@ -28,9 +28,9 @@ from LOCAL.utils import ffmpeg_progress
 from main.plugins.actions import LOG_START, LOG_END
 
 async def compress(event, msg, ffmpeg_cmd=0, ps_name=None):
-#     if ps_name is None:
-#         ps_name = '**COMPRESSING:**'
-#     Drone = event.client
+     if ps_name is None:
+         ps_name = '**COMPRESSING:**'
+     Drone = event.client
 #     edit = await Drone.send_message(event.chat_id, "Trying to process.", reply_to=msg.id)
 #     new_name = "out_" + dt.now().isoformat("_", "seconds")
 #     if hasattr(msg.media, "document"):
