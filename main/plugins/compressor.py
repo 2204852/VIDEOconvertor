@@ -27,7 +27,7 @@ from LOCAL.localisation import SUPPORT_LINK, JPG, JPG2, JPG3
 from LOCAL.utils import ffmpeg_progress
 from main.plugins.actions import LOG_START, LOG_END
 
-#async def compress(event, msg, ffmpeg_cmd=0, ps_name=None):
+async def compress(event, msg, ffmpeg_cmd=0, ps_name=None):
 #     if ps_name is None:
 #         ps_name = '**COMPRESSING:**'
 #     Drone = event.client
