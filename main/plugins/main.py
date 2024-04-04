@@ -81,13 +81,22 @@ async def _encode(event):
                          Button.inline("x265", data="265")],
                         [Button.inline("BACK", data="back")]])
      
+#@Drone.on(events.callbackquery.CallbackQuery(data="compress"))
+#async def _compress(event):
+#    await event.edit("If You want to compress video, You can use our other bot @videocompxbot",
+#                    buttons=[
+#                        [Button.url("Compress video (Move to Bot)", url="https://t.me/videocompxbot")],
+#                        [Button.inline("Back", data="back")]
+#                    ])
+
 @Drone.on(events.callbackquery.CallbackQuery(data="compress"))
 async def _compress(event):
-    await event.edit("If You want to compress video, You can use our other bot @videocompxbot",
+    await event.edit("**🗜COMPRESS**",
                     buttons=[
-                        [Button.url("Compress video (Move to Bot)", url="https://t.me/videocompxbot")],
-                        [Button.inline("Back", data="back")]
-                    ])
+                        [Button.inline("HEVC COMPRESS", data="hcomp"),
+                         Button.inline("FAST COMPRESS", data="fcomp")],
+                        [Button.inline("BACK", data="back")]])
+    
     
 @Drone.on(events.callbackquery.CallbackQuery(data="convert"))
 async def convert(event):
