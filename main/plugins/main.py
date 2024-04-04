@@ -125,8 +125,8 @@ async def set_timer(event, list1, list2):
     now = time.time()
     list2.append(f'{now}')
     list1.append(f'{event.sender_id}')
-    await event.client.send_message(event.chat_id, 'You can start a new process again after 5 minutes.')
-    await asyncio.sleep(300)
+    await event.client.send_message(event.chat_id, 'You can start a new process again after minutes.')
+    await asyncio.sleep(3)
     list2.pop(int(timer.index(f'{now}')))
     list1.pop(int(process1.index(f'{event.sender_id}')))
     
@@ -277,8 +277,8 @@ async def fcomp(event):
         now = time.time()
         timer.append(f'{now}')
         process1.append(f'{event.sender_id}')
-        await event.client.send_message(event.chat_id, 'You can start a new process again after 5 minutes.')
-        await asyncio.sleep(300)
+        await event.client.send_message(event.chat_id, 'You can start a new process again after minutes.')
+        await asyncio.sleep(1)
         timer.pop(int(timer.index(f'{now}')))
         process1.pop(int(process1.index(f'{event.sender_id}')))
     else:
@@ -304,8 +304,8 @@ async def hcomp(event):
         now = time.time()
         timer.append(f'{now}')
         process1.append(f'{event.sender_id}')
-        await event.client.send_message(event.chat_id, 'You can start a new process again after 5 minutes.')
-        await asyncio.sleep(300)
+        await event.client.send_message(event.chat_id, 'You can start a new process again after minutes.')
+        await asyncio.sleep(1)
         timer.pop(int(timer.index(f'{now}')))
         process1.pop(int(process1.index(f'{event.sender_id}')))
     else:
@@ -442,8 +442,8 @@ async def ss_(event):
     now = time.time()
     timer.append(f'{now}')
     process1.append(f'{event.sender_id}')
-    await event.client.send_message(event.chat_id, 'You can start a new process again after 2 minutes.')
-    await asyncio.sleep(120)
+    await event.client.send_message(event.chat_id, 'You can start a new process again after minutes.')
+    await asyncio.sleep(1)
     timer.pop(int(timer.index(f'{now}')))
     process1.pop(int(process1.index(f'{event.sender_id}')))
     
