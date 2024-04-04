@@ -25,9 +25,9 @@ from main.plugins.actions import LOG_START, LOG_END
 from LOCAL.localisation import SUPPORT_LINK, JPG, JPG2, JPG3
 from LOCAL.utils import ffmpeg_progress
 
-async def encode(event, msg, scale=0):
-    ps_name = str(f"**{scale}p ENCODING:**")
-    _ps = str(f"{scale}p ENCODE")
+async def compress(event, msg, ffmpeg_cmd=0, ps_name=None):
+    if ps_name is None:
+        ps_name = '**COMPRESSING:**'
     Drone = event.client
     edit = await Drone.send_message(event.chat_id, "Trying to process.", reply_to=msg.id)
     new_name = "out_" + dt.now().isoformat("_", "seconds")
@@ -53,11 +53,15 @@ async def encode(event, msg, scale=0):
         ext = (n.split("."))[1]
         out = new_name + ext
     DT = time.time()
+    _ps = "COMPRESS"
+    if ps_name != "**COMPRESSING:**":
+        _ps = "ENCODE"
     log = await LOG_START(event, f'**{_ps} PROCESS STARTED**\n\n[Bot is busy now]({SUPPORT_LINK})')
     log_end_text = f'**{_ps} PROCESS FINISHED**\n\n[Bot is free now]({SUPPORT_LINK})'
     try:
         await fast_download(n, file, Drone, edit, DT, "**DOWNLOADING:**")
     except Exception as e:
+        os.rmdir("encodemedia")
         await log.delete()
         await LOG_END(event, log_end_text)
         print(e)
@@ -68,32 +72,32 @@ async def encode(event, msg, scale=0):
     vid = video_metadata(name)
     hgt = int(vid['height'])
     wdt = int(vid['width'])
-    if scale == hgt:
-        os.remove(name)
-        return await edit.edit(f"The video is already in {scale}p resolution.")
-    if scale in [240, 360, 480, 720]:
-        if scale == 240 and wdt == 426:
-            os.remove(name)
-            return await edit.edit(f"The video is already in {scale}p resolution.")
-        elif scale == 360 and wdt == 640:
-            os.remove(name)
-            return await edit.edit(f"The video is already in {scale}p resolution.")
-        elif scale == 480 and wdt == 854:
-            os.remove(name)
-            return await edit.edit(f"The video is already in {scale}p resolution.")
-        elif scale == 720 and wdt == 1280:
-            os.remove(name)
-            return await edit.edit(f"The video is already in {scale}p resolution.")
+    if ffmpeg_cmd == 2:
+        if hgt == 360 or wdt == 640:
+            await log.delete()
+            await LOG_END(event, log_end_text)
+            await edit.edit("Fast compress cannot be used for this media, try using HEVC!")
+            os.rmdir("encodemedia")
+            return
     FT = time.time()
     progress = f"progress-{FT}.txt"
-    cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i "{name}" -vf scale=-2:{scale} -c:a copy "{out}" -y'
+    cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i "{name}" "{out}" -y'
+    if ffmpeg_cmd == 1:
+        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i "{name}" -preset ultrafast -vcodec libx265 -crf 28 -acodec copy -c:s copy "{out}" -y'
+    elif ffmpeg_cmd == 2:
+        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i "{name}" -c:v libx265 -crf 22 -preset ultrafast -s 640x360 -c:a copy -c:s copy "{out}" -y'
+    elif ffmpeg_cmd == 3:
+        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i "{name}" -preset faster -vcodec libx265 -crf 22 -acodec copy -c:s copy "{out}" -y'
+    elif ffmpeg_cmd == 4:
+        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i "{name}" -preset faster -vcodec libx264 -crf 22 -acodec copy -c:s copy "{out}" -y'
     try:
         await ffmpeg_progress(cmd, name, progress, FT, edit, ps_name, log=log)
     except Exception as e:
         await log.delete()
         await LOG_END(event, log_end_text)
+        os.rmdir("encodemedia")
         print(e)
-        return await edit.edit(f"An error occurred while encoding.\n\nContact [SUPPORT]({SUPPORT_LINK})", link_preview=False)  
+        return await edit.edit(f"An error occurred while FFMPEG progress.\n\nContact [SUPPORT]({SUPPORT_LINK})", link_preview=False)  
     out2 = dt.now().isoformat("_", "seconds") + ".mp4" 
     if msg.file.name:
         out2 = msg.file.name
@@ -102,17 +106,50 @@ async def encode(event, msg, scale=0):
     os.rename(out, out2)
     i_size = os.path.getsize(name)
     f_size = os.path.getsize(out2)     
-    text = f'**{_ps}D by** : @{BOT_UN}'
+    text = f'**ENCODED by:** @{BOT_UN}'
+    if ps_name != "**ENCODING:**":
+        text = f'**COMPRESSED by** : @{BOT_UN}\n\nbefore compressing : `{i_size}`\nafter compressing : `{f_size}`'
     UT = time.time()
-    await log.edit("Uploading file")
-    try:
-        uploader = await fast_upload(out2, out2, UT, Drone, edit, '**UPLOADING:**')
-        await Drone.send_file(event.chat_id, uploader, caption=text, thumb=JPG, force_document=True)
-    except Exception as e:
-        await log.delete()
-        await LOG_END(event, log_end_text)
-        print(e)
-        return await edit.edit(f"An error occurred while uploading.\n\nContact [SUPPORT]({SUPPORT_LINK})", link_preview=False)
+    await log.edit("Uploading file.")
+    if 'x-matroska' in mime:
+        try:
+            uploader = await fast_upload(f'{out2}', f'{out2}', UT, Drone, edit, '**UPLOADING:**')
+            await Drone.send_file(event.chat_id, uploader, caption=text, thumb=JPG, force_document=True)
+        except Exception as e:
+            await log.delete()
+            await LOG_END(event, log_end_text)
+            os.rmdir("encodemedia")
+            print(e)
+            return await edit.edit(f"An error occurred while uploading.\n\nContact [SUPPORT]({SUPPORT_LINK})", link_preview=False)
+    elif 'webm' in mime:
+        try:
+            uploader = await fast_upload(f'{out2}', f'{out2}', UT, Drone, edit, '**UPLOADING:**')
+            await Drone.send_file(event.chat_id, uploader, caption=text, thumb=JPG, force_document=True)
+        except Exception as e:
+            await log.delete()
+            await LOG_END(event, log_end_text)
+            os.rmdir("encodemedia")
+            print(e)
+            return await edit.edit(f"An error occurred while uploading.\n\nContact [SUPPORT]({SUPPORT_LINK})", link_preview=False)
+    else:
+        metadata = video_metadata(out2)
+        width = metadata["width"]
+        height = metadata["height"]
+        duration = metadata["duration"]
+        attributes = [DocumentAttributeVideo(duration=duration, w=width, h=height, supports_streaming=True)]
+        try:
+            uploader = await fast_upload(f'{out2}', f'{out2}', UT, Drone, edit, '**UPLOADING:**')
+            await Drone.send_file(event.chat_id, uploader, caption=text, thumb=JPG3, attributes=attributes, force_document=False)
+        except Exception:
+            try:
+                uploader = await fast_upload(f'{out2}', f'{out2}', UT, Drone, edit, '**UPLOADING:**')
+                await Drone.send_file(event.chat_id, uploader, caption=text, thumb=JPG, force_document=True)
+            except Exception as e:
+                await log.delete()
+                await LOG_END(event, log_end_text)
+                os.rmdir("encodemedia")
+                print(e)
+                return await edit.edit(f"An error occurred while uploading.\n\nContact [SUPPORT]({SUPPORT_LINK})", link_preview=False)
     await edit.delete()
     os.remove(name)
     os.remove(out2)
