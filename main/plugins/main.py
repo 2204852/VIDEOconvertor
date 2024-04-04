@@ -83,12 +83,12 @@ async def _encode(event):
      
 @Drone.on(events.callbackquery.CallbackQuery(data="compress"))
 async def _compress(event):
-    await event.edit("**🗜COMPRESS**",
+    await event.edit("If You want to compress video, You can use our other bot @videocompxbot",
                     buttons=[
-                        [Button.inline("HEVC COMPRESS", data="hcomp"),
-                         Button.inline("FAST COMPRESS", data="fcomp")],
-                        [Button.inline("BACK", data="back")]])
-
+                        [Button.url("Compress video (Move to Bot)", url="https://t.me/videocompxbot")],
+                        [Button.inline("Back", data="back")]
+                    ])
+    
 @Drone.on(events.callbackquery.CallbackQuery(data="convert"))
 async def convert(event):
     button = await event.get_message()
