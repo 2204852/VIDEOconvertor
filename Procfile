@@ -1,1 +1,1 @@
-Drone: python -m main
+web: pip install -r requirements.txt && python -m main
