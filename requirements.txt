@@ -10,3 +10,4 @@ pymongo[srv]
 requests
 telegraph
 tgcrypto
+decouple
